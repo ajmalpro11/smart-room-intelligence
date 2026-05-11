@@ -1,0 +1,15 @@
+# Virtual environment - never commit this
+venv/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# System files
+.DS_Store
+*.log
+
+# Sensitive data
+config.py
+secrets.py
