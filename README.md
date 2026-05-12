@@ -51,6 +51,8 @@ pip install -r requirements.txt
 ---
 
 ## 📁 Project Structure
+
+```
 smart-room/
 ├── sensors/
 │   ├── ultrasonic.py
@@ -67,7 +69,7 @@ smart-room/
 ├── photos/
 ├── requirements.txt
 └── README.md
-
+```
 ---
 
 ## 📸 Development Progress
@@ -87,20 +89,22 @@ smart-room/
 ---
 
 ## 🗺️ System Architecture
+
+```
 Sensors (Ultrasonic, IR, DHT22, MPU-6050, Camera)
-↓
+        ↓
 Python Data Collector
-↓
+        ↓
 MQTT Broker (Mosquitto)
-↓
+        ↓
 Decision Engine (Python)
-↓
+        ↓
 ┌─────────────┴─────────────┐
 ↓                           ↓
-InfluxDB                   Flask Web App
+InfluxDB              Flask Web App
 ↓                           ↓
-Grafana Dashboard        Live Camera Feed
-
+Grafana Dashboard    Live Camera Feed
+```
 ---
 
 ## 📅 Project Phases
@@ -108,7 +112,7 @@ Grafana Dashboard        Live Camera Feed
 - [x] Phase 1 — Environment setup & library installation
 - [x] Phase 1 — Ultrasonic sensor (HC-SR04) working
 - [x] Phase 1 — IR sensor motion detection working
-- [ ] Phase 1 — Pi Camera capture
+- [x] Phase 1 — Pi Camera capture
 - [ ] Phase 1 — DHT22 temperature & humidity (arriving today)
 - [ ] Phase 1 — MPU-6050 vibration detection (arriving today)
 - [ ] Phase 2 — Decision engine (sensor fusion)
