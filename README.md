@@ -106,12 +106,15 @@ Grafana Dashboard        Live Camera Feed
 ## 📅 Project Phases
 
 - [x] Phase 1 — Environment setup & library installation
-- [ ] Phase 2 — Individual sensor scripts
-- [ ] Phase 3 — Decision engine (sensor fusion)
-- [ ] Phase 4 — MQTT + InfluxDB + Grafana
-- [ ] Phase 5 — Flask web dashboard
-- [ ] Phase 6 — GitHub polish & documentation
-
+- [x] Phase 1 — Ultrasonic sensor (HC-SR04) working
+- [x] Phase 1 — IR sensor motion detection working
+- [ ] Phase 1 — Pi Camera capture
+- [ ] Phase 1 — DHT22 temperature & humidity (arriving today)
+- [ ] Phase 1 — MPU-6050 vibration detection (arriving today)
+- [ ] Phase 2 — Decision engine (sensor fusion)
+- [ ] Phase 3 — MQTT + InfluxDB + Grafana
+- [ ] Phase 4 — Flask web dashboard
+- [ ] Phase 5 — ML anomaly detection
 ---
 
 ## 👨‍💻 Author

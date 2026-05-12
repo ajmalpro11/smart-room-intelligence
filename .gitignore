@@ -13,3 +13,5 @@ __pycache__/
 # Sensitive data
 config.py
 secrets.py
+photos/*.jpg
+photos/*.png
