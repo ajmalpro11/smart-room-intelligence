@@ -115,7 +115,7 @@ Grafana Dashboard    Live Camera Feed
 - [x] Phase 1 — Pi Camera capture
 - [x] Phase 1 — DHT22 temperature & humidity (arriving today)
 - [ ] Phase 1 — MPU-6050 vibration detection (arriving today)
-- [ ] Phase 2 — Decision engine (sensor fusion)
+- [x] Phase 2 — Decision engine (sensor fusion)
 - [ ] Phase 3 — MQTT + InfluxDB + Grafana
 - [ ] Phase 4 — Flask web dashboard
 - [ ] Phase 5 — ML anomaly detection
