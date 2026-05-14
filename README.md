@@ -113,7 +113,7 @@ Grafana Dashboard    Live Camera Feed
 - [x] Phase 1 — Ultrasonic sensor (HC-SR04) working
 - [x] Phase 1 — IR sensor motion detection working
 - [x] Phase 1 — Pi Camera capture
-- [ ] Phase 1 — DHT22 temperature & humidity (arriving today)
+- [x] Phase 1 — DHT22 temperature & humidity (arriving today)
 - [ ] Phase 1 — MPU-6050 vibration detection (arriving today)
 - [ ] Phase 2 — Decision engine (sensor fusion)
 - [ ] Phase 3 — MQTT + InfluxDB + Grafana
