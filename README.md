@@ -161,7 +161,10 @@ nano .env
 - 🌐 Flask Dashboard: `http://YOUR_PI_IP:5000`
 - 📊 Grafana: `http://YOUR_PI_IP:3000`
 - 🗄️ InfluxDB: `http://YOUR_PI_IP:8086`
-
+**Access points:**
+- 🌐 Flask Dashboard: `http://YOUR_PI_IP:5000`
+- 📊 Grafana: `http://YOUR_PI_IP:3000`
+- 🗄️ InfluxDB: `http://YOUR_PI_IP:8086`
 ---
 
 ## 📁 Project Structure

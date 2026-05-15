@@ -41,4 +41,14 @@ echo "🌐 Dashboard: http://192.168.1.101:5000"
 echo "📊 Grafana:   http://192.168.1.101:3000"
 echo "========================================"
 echo ""
+# Start Ngrok tunnel with password protection
+echo "Starting Ngrok tunnel..."
+ngrok start smart-room &
+sleep 3
+NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | python3 -c "import sys,json; print(json.load(sys.stdin)['tunnels'][0]['public_url'])")
+echo "========================================"
+echo "🌍 Public URL: $NGROK_URL"
+echo "👤 Username: ajumal"
+echo "🔑 Password: smartroom2026"
+echo "========================================"
 python3 dashboard/app.py
