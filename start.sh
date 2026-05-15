@@ -29,7 +29,7 @@ echo "✅ MQTT subscriber running (PID: $SUBSCRIBER_PID)"
 echo "Starting MQTT publisher..."
 python3 mqtt/publisher.py &
 PUBLISHER_PID=$!
-sleep 2
+sleep 5
 echo "✅ MQTT publisher running (PID: $PUBLISHER_PID)"
 
 # Start Flask dashboard
