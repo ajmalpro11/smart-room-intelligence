@@ -15,3 +15,9 @@ config.py
 secrets.py
 photos/*.jpg
 photos/*.png
+
+# Docker data volumes — never commit these
+grafana/data/
+influxdb/data/
+mosquitto/data/
+mosquitto/log/
