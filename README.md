@@ -3,7 +3,7 @@
 > A fully local, edge-based IoT security and monitoring system built on Raspberry Pi 5.
 > No cloud. No subscription. Just hardware, Python, and open source tools.
 
-![Dashboard](photos/27_flask_dashboard.PNG)
+![Dashboard](photos/27_flask_dashboard_live.png)
 
 ---
 
@@ -27,14 +27,14 @@ When motion is detected and an object is within range:
 |---|---|
 | Raspberry Pi 5 | Edge computing platform |
 | Python 3.13 | Core programming language |
-| gpiozero | GPIO sensor control |
-| Picamera2 | Camera capture |
+| gpiozero + lgpio | GPIO sensor control (Pi 5 compatible) |
+| Picamera2 | Pi Camera Module 3 control |
 | Mosquitto MQTT | IoT messaging broker |
 | InfluxDB | Time-series data storage |
 | Grafana | Live data visualization |
-| Flask + SocketIO | Web dashboard |
-| Docker | Container orchestration |
-| OpenCV | Image processing |
+| Flask | Web dashboard framework |
+| Docker Compose | Container orchestration |
+| OpenCV | Image processing & camera stream |
 
 ---
 
@@ -45,7 +45,7 @@ When motion is detected and an object is within range:
 | HC-SR04 Ultrasonic | TRIG:18 ECHO:24 | Distance detection |
 | IR Obstacle Sensor | GPIO 23 | Motion detection |
 | DHT22 | GPIO 17 | Temperature & humidity |
-| MPU-6050 | I2C (SDA/SCL) | Vibration detection (pending) |
+| MPU-6050 | I2C (SDA:GPIO2 SCL:GPIO3) | Vibration detection (pending) |
 | Pi Camera Module 3 | CSI CAM0 | Image capture & live feed |
 | Passive Buzzer | GPIO 25 | Audio alerts |
 
@@ -56,23 +56,19 @@ When motion is detected and an object is within range:
 ```
 HC-SR04 + IR + DHT22 + Camera + Buzzer
                  ↓
-        Python Sensor Layer
+        Python Publisher (reads all sensors)
                  ↓
-        MQTT Broker (Mosquitto)
-                 ↓
-        Decision Engine (Python)
-        if motion AND distance < 150cm:
-            → capture photo
-            → sound buzzer
-            → log alert
+        MQTT Broker (Mosquitto :1883)
                  ↓
         ┌────────┴────────┐
         ↓                 ↓
-   InfluxDB          Flask Web App
-        ↓                 ↓
-   Grafana          Live Camera Feed
-   Dashboard        + Sensor Status
-                    + Alert Log
+   Subscriber         Flask App
+        ↓             (app.py)
+   InfluxDB               ↓
+        ↓            Live Camera
+   Grafana           + Sensor Status
+   Dashboard         + Alert Log
+   (:3000)           (:5000)
 ```
 
 ---
@@ -121,7 +117,10 @@ HC-SR04 + IR + DHT22 + Camera + Buzzer
 
 ### Phase 4 — Web Dashboard
 
-![Flask Dashboard](photos/27_flask_dashboard.PNG)
+| Screenshot | Description |
+|---|---|
+| ![](photos/27_flask_dashboard.PNG) | Flask dashboard initial setup |
+| ![](photos/27_flask_dashboard_live.png) | Flask dashboard with live sensor readings |
 
 ---
 
@@ -144,32 +143,26 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. Start Docker stack
+### 4. Configure credentials
 ```bash
-docker compose up -d
+cp .env.example .env
+nano .env
 ```
 
-### 5. Run MQTT publisher
+### 5. Start everything with one command
 ```bash
-python3 mqtt/publisher.py
+./start.sh
 ```
 
-### 6. Run MQTT subscriber
+### 6. Stop everything
 ```bash
-python3 mqtt/subscriber.py
+./stop.sh
 ```
 
-### 7. Run web dashboard
-```bash
-python3 dashboard/app.py
-```
-
-Open `http://YOUR_PI_IP:5000` in any browser on your WiFi.
-
-### 8. Run decision engine (intruder detection)
-```bash
-python3 processor/decision_engine.py
-```
+**Access points:**
+- 🌐 Flask Dashboard: `http://YOUR_PI_IP:5000`
+- 📊 Grafana: `http://YOUR_PI_IP:3000`
+- 🗄️ InfluxDB: `http://YOUR_PI_IP:8086`
 
 ---
 
@@ -194,11 +187,16 @@ smart-room/
 │       └── index.html     ← Web dashboard UI
 ├── mosquitto/config/      ← MQTT broker config
 ├── influxdb/              ← Time-series database
-├── grafana/               ← Dashboard config
+├── grafana/
+│   └── dashboards/        ← Auto-provisioned Grafana dashboard
 ├── photos/                ← Development screenshots
 ├── logs/                  ← Alert logs
 ├── docker-compose.yml     ← Full stack orchestration
 ├── requirements.txt       ← Python dependencies
+├── start.sh               ← One command to start everything
+├── stop.sh                ← One command to stop everything
+├── .env.example           ← Credential template
+├── PROJECT_REPORT.md      ← Full technical report
 └── README.md
 ```
 
@@ -210,10 +208,14 @@ smart-room/
 - [x] Phase 2 — Multi-sensor decision engine
 - [x] Phase 3 — MQTT + InfluxDB + Grafana pipeline
 - [x] Phase 4 — Flask web dashboard with live camera
+- [x] Phase 4 — Single command startup (start.sh / stop.sh)
+- [x] Phase 4 — Grafana dashboard auto-provisioning
+- [x] Phase 4 — Secure credentials via .env file
 - [ ] Phase 5 — ML anomaly detection (coming soon)
 - [ ] Phase 6 — MPU-6050 vibration sensor (pending soldering)
 
 ---
+
 ## 🔑 Credentials Setup
 
 Copy the example env file and fill in your values:
@@ -224,6 +226,15 @@ nano .env
 ```
 
 > ⚠️ Never commit your `.env` file — it's already in `.gitignore`
+
+---
+
+## 📄 Technical Report
+
+A full technical report covering hardware, software stack, implementation
+details, challenges and results is available in
+[PROJECT_REPORT.md](PROJECT_REPORT.md)
+
 ---
 
 ## 👨‍💻 Author
