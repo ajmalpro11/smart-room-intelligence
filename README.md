@@ -233,9 +233,10 @@ nano .env
 ## 📄 Technical Report
 
 A full technical report covering hardware, software stack, implementation
-details, challenges and results is available in
-[PROJECT_REPORT.md](PROJECT_REPORT.md)
+details, challenges and results is available in two formats:
 
+- 📝 [PROJECT_REPORT.md](PROJECT_REPORT.md) — Quick reference (Markdown)
+- 📕 [Full Illustrated Report (PDF)](Smart_Room_Intelligence_Report.pdf) — Complete report with photos
 ---
 
 ## 👨‍💻 Author
