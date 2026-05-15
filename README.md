@@ -214,14 +214,15 @@ smart-room/
 - [ ] Phase 6 — MPU-6050 vibration sensor (pending soldering)
 
 ---
+## 🔑 Credentials Setup
 
-## 🔑 Default Credentials
+Copy the example env file and fill in your values:
+```bash
+cp .env.example .env
+nano .env
+```
 
-| Service | Username | Password |
-|---|---|---|
-| Grafana | admin | smartroom123 |
-| InfluxDB | admin | smartroom123 |
-
+> ⚠️ Never commit your `.env` file — it's already in `.gitignore`
 ---
 
 ## 👨‍💻 Author

@@ -1,5 +1,3 @@
-version: '3'
-
 services:
 
   mosquitto:
@@ -23,10 +21,10 @@ services:
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=smartroom123
-      - DOCKER_INFLUXDB_INIT_ORG=smartroom
-      - DOCKER_INFLUXDB_INIT_BUCKET=sensors
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=smartroom-token-2026
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_TOKEN}
     restart: unless-stopped
 
   grafana:
@@ -37,7 +35,7 @@ services:
     volumes:
       - ./grafana/data:/var/lib/grafana
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=smartroom123
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
     depends_on:
       - influxdb
     restart: unless-stopped

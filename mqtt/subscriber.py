@@ -7,16 +7,20 @@ from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import json
 from datetime import datetime
-
 # --- Configuration ---
-MQTT_BROKER  = "localhost"
-MQTT_PORT    = 1883
-MQTT_TOPIC   = "smartroom/sensors"
+import os
+from dotenv import load_dotenv
 
-INFLUX_URL   = "http://localhost:8086"
-INFLUX_TOKEN = "smartroom-token-2026"
-INFLUX_ORG   = "smartroom"
-INFLUX_BUCKET = "sensors"
+load_dotenv()
+
+MQTT_BROKER   = "localhost"
+MQTT_PORT     = 1883
+MQTT_TOPIC    = "smartroom/sensors"
+
+INFLUX_URL    = "http://localhost:8086"
+INFLUX_TOKEN  = os.getenv("INFLUXDB_TOKEN")
+INFLUX_ORG    = os.getenv("INFLUXDB_ORG")
+INFLUX_BUCKET = os.getenv("INFLUXDB_BUCKET")
 
 # --- InfluxDB Setup ---
 influx_client = InfluxDBClient(

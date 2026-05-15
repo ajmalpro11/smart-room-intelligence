@@ -21,3 +21,4 @@ grafana/data/
 influxdb/data/
 mosquitto/data/
 mosquitto/log/
+.env
