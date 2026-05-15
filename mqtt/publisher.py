@@ -47,7 +47,7 @@ try:
     while True:
         # Read all sensors
         distance = round(ultrasonic.distance * 100, 2)
-        motion   = 1 if not ir_sensor.value else 0
+        motion   = 1 if ir_sensor.value else 0
         temp, humidity = get_dht_readings()
 
         # Build data payload

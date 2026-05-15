@@ -43,7 +43,7 @@ def get_distance():
     return round(ultrasonic.distance * 100, 2)
 
 def is_motion():
-    return not ir_sensor.value
+    return  ir_sensor.value
 
 def get_environment():
     try:

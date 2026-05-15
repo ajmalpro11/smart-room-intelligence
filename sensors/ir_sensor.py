@@ -14,7 +14,7 @@ ir_sensor = DigitalInputDevice(IR_PIN, pull_up=True)
 def is_motion_detected():
     # IR sensor outputs LOW when object detected
     # (pull_up=True means we invert the logic)
-    return not ir_sensor.value
+    return  ir_sensor.value
 
 def main():
     print("IR Sensor ready... (Ctrl+C to stop)")
