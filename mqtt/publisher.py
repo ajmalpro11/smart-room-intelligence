@@ -18,7 +18,7 @@ MQTT_TOPIC  = "smartroom/sensors"
 # --- Sensor Setup ---
 print("Initialising sensors...")
 ultrasonic = DistanceSensor(echo=24, trigger=18, max_distance=4)
-ir_sensor  = DigitalInputDevice(23, pull_up=True)
+ir_sensor  = DigitalInputDevice(23, pull_up=False)
 dht_sensor = adafruit_dht.DHT22(board.D17)
 
 # --- MQTT Client Setup ---

@@ -22,7 +22,7 @@ DISTANCE_THRESHOLD = 150  # cm — alert if closer than this
 print("Initialising sensors...")
 
 ultrasonic = DistanceSensor(echo=24, trigger=18, max_distance=4)
-ir_sensor  = DigitalInputDevice(23, pull_up=True)
+ir_sensor  = DigitalInputDevice(23, pull_up=False)
 buzzer     = Buzzer(25)
 dht_sensor = adafruit_dht.DHT22(board.D17)
 
