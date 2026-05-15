@@ -1,41 +1,22 @@
 # app.py
-# Flask web dashboard for Smart Room Intelligence System
-# Shows live camera feed, sensor readings and alert log
+# Flask dashboard — gets sensor data from MQTT
+
+import os
+os.environ["LIBCAMERA_LOG_LEVELS"] = "3"
 
 from flask import Flask, render_template, Response, jsonify
 from flask_socketio import SocketIO
 from picamera2 import Picamera2
-from gpiozero import DistanceSensor, DigitalInputDevice
-import adafruit_dht
-import board
+import paho.mqtt.client as mqtt
 import threading
+import json
 import time
-import os
 import cv2
-
-# --- Suppress logs ---
-os.environ["LIBCAMERA_LOG_LEVELS"] = "3"
 
 # --- Flask Setup ---
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "smartroom2026"
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="gevent")
-
-# --- Sensor Setup ---
-print("Initialising sensors...")
-ultrasonic = DistanceSensor(echo=24, trigger=18, max_distance=4)
-ir_sensor  = DigitalInputDevice(23, pull_up=True)
-dht_sensor = adafruit_dht.DHT22(board.D17)
-print("Sensors ready!")
-
-# --- Camera Setup ---
-camera = Picamera2()
-config = camera.create_video_configuration(
-    main={"size": (640, 480), "format": "RGB888"}
-)
-camera.configure(config)
-camera.start()
-time.sleep(1)
 
 # --- Global sensor data ---
 sensor_data = {
@@ -45,11 +26,21 @@ sensor_data = {
     "humidity": 0
 }
 
-# --- Camera stream generator ---
+# --- Camera Setup ---
+print("Initialising camera...")
+camera = Picamera2()
+config = camera.create_video_configuration(
+    main={"size": (640, 480), "format": "RGB888"}
+)
+camera.configure(config)
+camera.start()
+time.sleep(1)
+print("Camera ready!")
+
+# --- Camera stream ---
 def generate_frames():
     while True:
         frame = camera.capture_array()
-        # Flip image: 0=vertical, 1=horizontal, -1=both
         frame = cv2.flip(frame, -1)
         _, buffer = cv2.imencode(".jpg", frame)
         frame_bytes = buffer.tobytes()
@@ -58,23 +49,38 @@ def generate_frames():
                + frame_bytes + b"\r\n")
         time.sleep(0.05)
 
-# --- Sensor reading thread ---
-def read_sensors():
-    while True:
-        try:
-            sensor_data["distance"] = round(
-                ultrasonic.distance * 100, 2)
-            sensor_data["motion"] = not ir_sensor.value
-            try:
-                sensor_data["temperature"] = dht_sensor.temperature
-                sensor_data["humidity"]    = dht_sensor.humidity
-            except RuntimeError:
-                pass
-            socketio.emit("sensor_update", sensor_data)
-        except Exception as e:
-            print(f"Sensor error: {e}")
-        time.sleep(2)
+# --- MQTT Setup ---
+def on_connect(client, userdata, flags, reason_code, properties):
+    if reason_code == 0:
+        print("Connected to MQTT broker!")
+        client.subscribe("smartroom/sensors")
+    else:
+        print(f"MQTT connection failed: {reason_code}")
 
+def on_message(client, userdata, msg):
+    global sensor_data
+    try:
+        data = json.loads(msg.payload.decode())
+        sensor_data["distance"]    = data.get("distance", 0)
+        sensor_data["motion"]      = bool(data.get("motion", 0))
+        sensor_data["temperature"] = data.get("temperature", 0)
+        sensor_data["humidity"]    = data.get("humidity", 0)
+        socketio.emit("sensor_update", sensor_data)
+        print(f"Dashboard updated: {sensor_data}")
+    except Exception as e:
+        print(f"MQTT message error: {e}")
+
+def start_mqtt():
+    time.sleep(5)  # wait for Flask to fully start
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+    client.on_connect = on_connect
+    client.on_message = on_message
+    try:
+        client.connect("localhost", 1883, 60)
+        print("Flask MQTT connected!")
+        client.loop_forever()
+    except Exception as e:
+        print(f"Flask MQTT error: {e}")
 # --- Read alert log ---
 def get_alerts():
     log_file = "/home/ajmalpro11/smart-room/logs/alerts.log"
@@ -104,9 +110,9 @@ def sensors():
 def alerts():
     return jsonify(get_alerts())
 
-# --- Start sensor thread ---
-sensor_thread = threading.Thread(target=read_sensors, daemon=True)
-sensor_thread.start()
+# --- Start MQTT thread ---
+mqtt_thread = threading.Thread(target=start_mqtt, daemon=True)
+mqtt_thread.start()
 
 if __name__ == "__main__":
     print("Starting Smart Room Dashboard...")

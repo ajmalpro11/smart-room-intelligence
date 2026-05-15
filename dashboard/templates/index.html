@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Room Intelligence</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -95,6 +94,20 @@
             margin-right: 8px;
             animation: pulse 2s infinite;
         }
+        .links {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .links a {
+            color: #00ff88;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 14px;
+            border: 1px solid #00ff88;
+            padding: 6px 16px;
+            border-radius: 20px;
+        }
+        .links a:hover { background: #00ff8822; }
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50%       { opacity: 0.3; }
@@ -103,6 +116,11 @@
 </head>
 <body>
     <h1>🏠 Smart Room Intelligence</h1>
+
+    <div class="links">
+        <a href="http://192.168.1.101:3000" target="_blank">📊 Grafana Dashboard</a>
+        <a href="http://192.168.1.101:8086" target="_blank">🗄️ InfluxDB</a>
+    </div>
 
     <div class="grid">
 
@@ -140,19 +158,23 @@
             <h2>System Status</h2>
             <div class="sensor-grid">
                 <div class="sensor-item">
-                    <div class="sensor-value" style="font-size:16px;color:#00ff88">ARMED</div>
+                    <div class="sensor-value" 
+                         style="font-size:16px;color:#00ff88">ARMED</div>
                     <div class="sensor-label">System</div>
                 </div>
                 <div class="sensor-item">
-                    <div class="sensor-value" style="font-size:16px;color:#00ff88">ONLINE</div>
+                    <div class="sensor-value" 
+                         style="font-size:16px;color:#00ff88">ONLINE</div>
                     <div class="sensor-label">MQTT</div>
                 </div>
                 <div class="sensor-item">
-                    <div class="sensor-value" style="font-size:16px;color:#00ff88">ONLINE</div>
+                    <div class="sensor-value" 
+                         style="font-size:16px;color:#00ff88">ONLINE</div>
                     <div class="sensor-label">InfluxDB</div>
                 </div>
                 <div class="sensor-item">
-                    <div class="sensor-value" style="font-size:16px;color:#00ff88">ONLINE</div>
+                    <div class="sensor-value" 
+                         style="font-size:16px;color:#00ff88">ONLINE</div>
                     <div class="sensor-label">Grafana</div>
                 </div>
             </div>
@@ -169,27 +191,32 @@
     </div>
 
     <script>
-        // Connect to SocketIO
-        const socket = io();
+        // Poll sensors every 2 seconds
+        function updateSensors() {
+            fetch("/sensors")
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById("temperature").textContent =
+                        data.temperature ? 
+                        data.temperature.toFixed(1) : "--";
+                    document.getElementById("humidity").textContent =
+                        data.humidity ? 
+                        data.humidity.toFixed(1) : "--";
+                    document.getElementById("distance").textContent =
+                        data.distance ? 
+                        data.distance.toFixed(0) : "--";
 
-        // Update sensor readings live
-        socket.on("sensor_update", function(data) {
-            document.getElementById("temperature").textContent =
-                data.temperature ? data.temperature.toFixed(1) : "--";
-            document.getElementById("humidity").textContent =
-                data.humidity ? data.humidity.toFixed(1) : "--";
-            document.getElementById("distance").textContent =
-                data.distance ? data.distance.toFixed(0) : "--";
-
-            const motionEl = document.getElementById("motion");
-            if (data.motion) {
-                motionEl.textContent = "YES";
-                motionEl.className = "sensor-value motion-yes";
-            } else {
-                motionEl.textContent = "NO";
-                motionEl.className = "sensor-value motion-no";
-            }
-        });
+                    const motionEl = document.getElementById("motion");
+                    if (data.motion) {
+                        motionEl.textContent = "YES";
+                        motionEl.className = "sensor-value motion-yes";
+                    } else {
+                        motionEl.textContent = "NO";
+                        motionEl.className = "sensor-value motion-no";
+                    }
+                })
+                .catch(err => console.log("Sensor error:", err));
+        }
 
         // Load alerts every 10 seconds
         function loadAlerts() {
@@ -198,7 +225,8 @@
                 .then(alerts => {
                     const div = document.getElementById("alerts");
                     if (alerts.length === 0) {
-                        div.innerHTML = "<div class='no-alerts'>No alerts yet</div>";
+                        div.innerHTML = 
+                            "<div class='no-alerts'>No alerts yet</div>";
                         return;
                     }
                     div.innerHTML = alerts.reverse().map(a =>
@@ -207,6 +235,9 @@
                 });
         }
 
+        // Start polling
+        updateSensors();
+        setInterval(updateSensors, 2000);
         loadAlerts();
         setInterval(loadAlerts, 10000);
     </script>
