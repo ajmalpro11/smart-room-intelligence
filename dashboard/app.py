@@ -1,6 +1,4 @@
 # app.py
-# Flask dashboard — gets sensor data from MQTT
-
 import os
 os.environ["LIBCAMERA_LOG_LEVELS"] = "3"
 
@@ -26,6 +24,10 @@ sensor_data = {
     "humidity": 0
 }
 
+# --- Global camera frame ---
+output_frame = None
+frame_lock = threading.Lock()
+
 # --- Camera Setup ---
 print("Initialising camera...")
 camera = Picamera2()
@@ -37,25 +39,38 @@ camera.start()
 time.sleep(1)
 print("Camera ready!")
 
-# --- Camera stream ---
-def generate_frames():
+# --- Camera capture thread ---
+def capture_frames():
+    global output_frame
     while True:
         frame = camera.capture_array()
         frame = cv2.flip(frame, -1)
-        _, buffer = cv2.imencode(".jpg", frame)
-        frame_bytes = buffer.tobytes()
+        _, buffer = cv2.imencode(
+            ".jpg", frame,
+            [cv2.IMWRITE_JPEG_QUALITY, 70]
+        )
+        with frame_lock:
+            output_frame = buffer.tobytes()
+        time.sleep(0.05)
+
+# --- Camera stream generator ---
+def generate_frames():
+    global output_frame
+    while True:
+        with frame_lock:
+            if output_frame is None:
+                continue
+            frame = output_frame
         yield (b"--frame\r\n"
                b"Content-Type: image/jpeg\r\n\r\n"
-               + frame_bytes + b"\r\n")
+               + frame + b"\r\n")
         time.sleep(0.05)
 
 # --- MQTT Setup ---
 def on_connect(client, userdata, flags, reason_code, properties):
     if reason_code == 0:
-        print("Connected to MQTT broker!")
+        print("Flask MQTT connected!")
         client.subscribe("smartroom/sensors")
-    else:
-        print(f"MQTT connection failed: {reason_code}")
 
 def on_message(client, userdata, msg):
     global sensor_data
@@ -65,22 +80,21 @@ def on_message(client, userdata, msg):
         sensor_data["motion"]      = bool(data.get("motion", 0))
         sensor_data["temperature"] = data.get("temperature", 0)
         sensor_data["humidity"]    = data.get("humidity", 0)
-        socketio.emit("sensor_update", sensor_data)
         print(f"Dashboard updated: {sensor_data}")
     except Exception as e:
-        print(f"MQTT message error: {e}")
+        print(f"MQTT error: {e}")
 
 def start_mqtt():
-    time.sleep(5)  # wait for Flask to fully start
+    time.sleep(5)
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
     client.on_connect = on_connect
     client.on_message = on_message
     try:
         client.connect("localhost", 1883, 60)
-        print("Flask MQTT connected!")
         client.loop_forever()
     except Exception as e:
         print(f"Flask MQTT error: {e}")
+
 # --- Read alert log ---
 def get_alerts():
     log_file = "/home/ajmalpro11/smart-room/logs/alerts.log"
@@ -110,7 +124,10 @@ def sensors():
 def alerts():
     return jsonify(get_alerts())
 
-# --- Start MQTT thread ---
+# --- Start threads ---
+camera_thread = threading.Thread(target=capture_frames, daemon=True)
+camera_thread.start()
+
 mqtt_thread = threading.Thread(target=start_mqtt, daemon=True)
 mqtt_thread.start()
 
