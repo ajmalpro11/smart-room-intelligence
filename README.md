@@ -217,6 +217,7 @@ smart-room/
 ## 🔑 Credentials Setup
 
 Copy the example env file and fill in your values:
+
 ```bash
 cp .env.example .env
 nano .env
