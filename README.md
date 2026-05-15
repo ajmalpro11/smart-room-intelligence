@@ -3,7 +3,7 @@
 > A fully local, edge-based IoT security and monitoring system built on Raspberry Pi 5.
 > No cloud. No subscription. Just hardware, Python, and open source tools.
 
-![Dashboard](photos/27_flask_dashboard_live.png)
+![Dashboard](photos/27_flask_dashboard_live.PNG)
 
 ---
 
@@ -94,7 +94,7 @@ HC-SR04 + IR + DHT22 + Camera + Buzzer
 | Ultrasonic | ![](photos/09_ultrasonic_wiring.jpg.jpeg) | ![](photos/10_ultrasonic_readings.png) |
 | IR Sensor | ![](photos/11_ir_sensor_wiring.jpg.jpeg) | ![](photos/12_ir_sensor_readings.png) |
 | Camera | — | ![](photos/13_camera_working.png) |
-| DHT22 | ![](photos/14_dht22_wiring.jpg) | ![](photos/15_dht22_readings.png) |
+| DHT22 | ![](photos/14_dht22_wiring.jpeg) | ![](photos/15_dht22_readings.png) |
 | Full wiring | ![](photos/17_full_wiring.jpeg) | — |
 
 ### Phase 2 — Decision Engine
@@ -109,18 +109,16 @@ HC-SR04 + IR + DHT22 + Camera + Buzzer
 | Screenshot | Description |
 |---|---|
 | ![](photos/20_docker_working.png) | Docker installed and running |
+| ![](photos/21_grafana_dashboard.PNG) | Grafana welcome screen |
+| ![](photos/22_influxdb_connected.PNG) | InfluxDB connected to Grafana |
 | ![](photos/23_mqtt_publishing.PNG) | MQTT publisher streaming sensor data |
 | ![](photos/24_mqtt_pipeline.PNG) | Full pipeline — publisher and subscriber |
-| ![](photos/22_influxdb_connected.PNG) | InfluxDB connected to Grafana |
 | ![](photos/25_grafana_temperature.PNG) | Live temperature chart |
 | ![](photos/26_grafana_full_dashboard.PNG) | Full 4-panel Grafana dashboard |
 
 ### Phase 4 — Web Dashboard
 
-| Screenshot | Description |
-|---|---|
-| ![](photos/27_flask_dashboard.PNG) | Flask dashboard initial setup |
-| ![](photos/27_flask_dashboard_live.png) | Flask dashboard with live sensor readings |
+![Flask Dashboard](photos/27_flask_dashboard_live.PNG)
 
 ---
 
